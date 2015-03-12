@@ -38,8 +38,8 @@ public class RoutineTask extends TimerTask {
             UserMail.setSmtpSender(userMailConfig.get(2));
 
             Mail mail = new Mail();
-//            boolean isSuccessful = mail.SendMail(toWhom, eTitle, eBody);
-            boolean isSuccessful = true;
+            boolean isSuccessful = mail.SendMail(toWhom, eTitle, eBody);
+            // boolean isSuccessful = true;
             if (isSuccessful) {
                 System.out.println("Success!");
             } else {
