@@ -11,6 +11,9 @@ public class Scheduler {
     private Timer timer;
     private Date dateFirst;
     private long period;
+    public enum DayOfWeek {
+        SUN, MON, TUE, WED, THU, FRI, SAT
+    }
 
     public Scheduler(Date dateFirst, long period) {
         this.timer = new Timer();
@@ -20,6 +23,10 @@ public class Scheduler {
 
     public void active() {
         this.timer.schedule(new RoutineTask(), this.dateFirst, this.period);
+    }
+
+    public void activeCustomized() {
+        this.timer.schedule(new RoutineTaskCustomized(), this.dateFirst, this.period);
     }
 
     public static Date getDate(int hour, int min, int second) {
@@ -34,14 +41,22 @@ public class Scheduler {
         System.out.println("-----------------------------------------------");
         System.out.println("Usage: Scheduler [hour:min:second] [period]   |");
         System.out.println("Default Value:                                |");
-        System.out.println("           hour:min:second=23:59:59           |");
-        System.out.println("           peroid=86400000                    |");
+        System.out.println("        hour:min:second=00:00:01              |");
+        System.out.println("        peroid=86400000(peroid=now for deubg) |");
         System.out.println("-----------------------------------------------");
+    }
+
+    // get the day in a week
+    public static DayOfWeek getWeek(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int week_idx = cal.get(Calendar.DAY_OF_WEEK) - 1;
+        return DayOfWeek.values()[week_idx];
     }
 
     public static void main(String[] args) {
         System.out.println("Routine is running...");
-        Date dateFirst = Scheduler.getDate(23, 59, 59); // send every mid-night 23:59:59
+        Date dateFirst = Scheduler.getDate(00, 00, 01); // send every mid-night 00:00:01
         long period = 86400000;
 
         // check the usage
@@ -53,6 +68,9 @@ public class Scheduler {
                     int min = Integer.parseInt(fields[1]);
                     int second = Integer.parseInt(fields[2]);
                     dateFirst = Scheduler.getDate(hour, min, second);
+                    // for debug
+                } else if (args[0].equalsIgnoreCase("now")) {
+                    dateFirst = new Date();
                 } else {
                     Scheduler.printUsage();
                     System.out.println("Abort");
@@ -71,6 +89,6 @@ public class Scheduler {
 
         // begin to work
         Scheduler scheduler = new Scheduler(dateFirst, period);
-        scheduler.active();
+        scheduler.activeCustomized();
     }
 }

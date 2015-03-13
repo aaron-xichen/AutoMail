@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Date;
 
 /**
  * Created by cxlyc007 on 3/11/15.
@@ -28,6 +29,61 @@ public class Config {
         return toWhom;
     }
 
+    public static Record pickOneByDifficulty(String diffculty, String...filePath) throws IOException {
+        // read all the data
+        String file = Config.getRecordsPath();
+        Set<Record> allRecords = new HashSet<Record>();
+        Set<Record> selectedRecords = new HashSet<Record>();
+        if (0 != filePath.length)
+            file = filePath[0];
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                Record tmp = new Record(line.trim());
+                if (diffculty.equalsIgnoreCase(tmp.getDifficulty()))
+                    selectedRecords.add(tmp);
+                allRecords.add(tmp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            br.close();
+        }
+
+        if (allRecords.isEmpty())
+            return null;
+
+        Record returnRecord;
+        // no record of specific difficulty, thus use allRecords instead
+        if (selectedRecords.isEmpty()) {
+            System.out.println("no match record found, use other diffculty");
+            int index = (int)(allRecords.size() * Math.random());
+            List<Record> recordList = new ArrayList<Record>(allRecords);
+            returnRecord = new Record(recordList.get(index));
+        } else {
+            int index = (int)(selectedRecords.size() * Math.random());
+            List<Record> recordList = new ArrayList<Record>(selectedRecords);
+            returnRecord = new Record(recordList.get(index));
+        }
+        allRecords.remove(returnRecord);
+
+
+        // write to file
+        if (!allRecords.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Record r : allRecords) {
+                sb.append(r.toString() + "\n");
+            }
+            PrintWriter writer = new PrintWriter(file, "UTF-8");
+            String writeLine = sb.toString().trim();
+            writer.println(writeLine);
+            writer.close();
+        }
+
+        // return
+        return returnRecord;
+    }
 
     public static Record pickOneRamdonly(String... filePath) throws IOException {
 
@@ -114,5 +170,14 @@ public class Config {
                       ".." + File.separatorChar +
                       "config" + File.separatorChar + "sending_list.txt";
         return file;
+    }
+
+    public static void main(String[] args) {
+        try {
+            Scheduler.DayOfWeek d = Scheduler.getWeek(new Date());
+            System.out.println(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

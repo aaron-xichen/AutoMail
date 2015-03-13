@@ -28,5 +28,9 @@
     java Scheduler [hour:min:second] [period]
     ```
 
-    There are two optional arguments, the first is the first time to send, say, 23:59:59. The second is the period of sending the mail, say, 86400000, which is one day.
+    There are two optional arguments, the first is the first time to send, say, 00:00:01(default). The second is the period of sending the mail, say, 86400000(default), which is one day.Also, you can set period to `now` for debugging.
+- The sending strategy is various, the default stategy is as follows:
+    - Monday, Tuesday, Wednesday - easy problem
+    - Thursday, Friday - medium problem
+    - Saturday, Sunday - hard problem
 
